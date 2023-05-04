@@ -26,3 +26,44 @@
   background-size: cover;
   background-position: center;
 }
+
+body {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.search-form {
+  height: 60px;
+  background-color: #ff6b0a;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.input {
+  margin-top: 10px;
+border: solid;
+width: 300px;
+height: 40px;
+}
+
+.load-more {
+  display: none;
+}
+
+.gallery {
+  display: flex;
+flex-wrap: wrap;
+justify-content: center;
+column-gap: 20px;
+}
+
+.img-small{
+ 
+  width: 150px;
+  
+}
+
+.btn-submit {
+  height: 40px;
+}
+
