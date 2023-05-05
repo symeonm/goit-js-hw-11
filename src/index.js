@@ -9,7 +9,7 @@ let USER_SEARCH = '';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
-const img = document.querySelector('.img-small')
+// const img = document.querySelector('.img-small')
 let page = 1;
 
 const loadMoreBTN = document.createElement('button');
@@ -31,7 +31,7 @@ function createMarkup(arr) {
   return arr.map(
       ({
         webformatURL,
-        largeImageURL,
+        // largeImageURL,
         tags,
         likes,
         views,
