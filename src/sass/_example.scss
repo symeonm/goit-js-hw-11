@@ -39,7 +39,7 @@ body {
   text-align: center;
 }
 
-.input {
+.input-search {
   margin-top: 10px;
 border: solid;
 width: 300px;
@@ -48,6 +48,8 @@ height: 40px;
 
 .load-more {
   display: none;
+ margin-left: auto;
+ margin-right: auto;
 }
 
 .gallery {
