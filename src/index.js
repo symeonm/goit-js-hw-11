@@ -10,7 +10,7 @@ let searchValue = '';
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
 const search = document.querySelector('#inputId');
-
+let totalHits = ''
 let page = 1;
 // const loadMoreBTN = document.querySelector('.load-more');
 const loadMoreBTN = document.createElement('button');
@@ -28,7 +28,8 @@ function onSubmit(evt) {
     return;
   }
 
-  getImage(searchValue).then(resp => {
+  getImage(searchValue).then((resp) => {
+    // console.log(data)
     if (resp.length > 0) {
       gallery.insertAdjacentHTML('beforeend', createMarkup(resp));
       // observer.observe(guard);
@@ -77,14 +78,7 @@ async function getImage(searchValue) {
     const URL = `${BASE_URL}?key=${API_KEY}&q=${searchValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`;
     const response = await axios.get(URL);
     const data = response.data.hits;
-    console.log(response)
-    if (response.data.hits.length < 40) {
-      Notiflix.Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
-      loadMoreBTN.remove();
-      return
-    }
+    totalHits = response.data.totalHits
     return data;
   } catch (error) {
     console.log(error);
@@ -98,6 +92,13 @@ function onClick() {
   getImage(searchValue).then(resp => {
     if (resp.length > 0) {
       gallery.insertAdjacentHTML('beforeend', createMarkup(resp));
+      if (totalHits <= gallery.children.length) {
+        Notiflix.Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+        loadMoreBTN.remove();
+        return
+      }
       // observer.observe(guard);
       gallery.append(loadMoreBTN);
       return;
