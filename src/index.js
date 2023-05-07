@@ -10,7 +10,7 @@ let searchValue = '';
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
 const search = document.querySelector('#inputId');
-let totalHits = ''
+let totalHits = '';
 let page = 1;
 // const loadMoreBTN = document.querySelector('.load-more');
 const loadMoreBTN = document.createElement('button');
@@ -18,22 +18,27 @@ loadMoreBTN.type = 'button';
 loadMoreBTN.class = 'load-more';
 loadMoreBTN.textContent = 'Load more';
 
-function onSubmit(evt) {
+async function onSubmit(evt) {
   evt.preventDefault();
   searchValue = search.value.trim();
   gallery.innerHTML = '';
   page = 1;
   if (searchValue === '') {
     gallery.innerHTML = '';
+    loadMoreBTN.remove();
     return;
   }
 
-  getImage(searchValue).then((resp) => {
-    // console.log(data)
+  try {
+    const resp = await getImage(searchValue);
     if (resp.length > 0) {
       gallery.insertAdjacentHTML('beforeend', createMarkup(resp));
+      if (totalHits <= gallery.children.length) {
+        loadMoreBTN.remove();
+        return;
+      }
       // observer.observe(guard);
-      gallery.append(loadMoreBTN);
+      gallery.after(loadMoreBTN);
       return;
     } else if (!searchValue) {
       gallery.innerHTML = '';
@@ -43,7 +48,9 @@ function onSubmit(evt) {
         'Sorry, there are no images matching your search query. Please try again.'
       );
     }
-  });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 form.addEventListener('submit', onSubmit);
@@ -78,7 +85,7 @@ async function getImage(searchValue) {
     const URL = `${BASE_URL}?key=${API_KEY}&q=${searchValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`;
     const response = await axios.get(URL);
     const data = response.data.hits;
-    totalHits = response.data.totalHits
+    totalHits = response.data.totalHits;
     return data;
   } catch (error) {
     console.log(error);
@@ -87,32 +94,36 @@ async function getImage(searchValue) {
 
 loadMoreBTN.addEventListener('click', onClick);
 
-function onClick() {
-  page += 1;
-  getImage(searchValue).then(resp => {
-    if (resp.length > 0) {
-      gallery.insertAdjacentHTML('beforeend', createMarkup(resp));
-      if (totalHits <= gallery.children.length) {
-        Notiflix.Notify.failure(
-          "We're sorry, but you've reached the end of search results."
-        );
-        loadMoreBTN.remove();
-        return
-      }
-      // observer.observe(guard);
-      gallery.append(loadMoreBTN);
-      return;
-    } else if (!searchValue || '') {
-      gallery.innerHTML = '';
-      onSubmit();
-      return;
-    } else {
-      loadMoreBTN.remove();
+async function onClick() {
+  try {
+    page += 1;
+  const data = await getImage(searchValue);
+  if (data.length > 0) {
+    gallery.insertAdjacentHTML('beforeend', createMarkup(data));
+    if (totalHits <= gallery.children.length) {
       Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
+        "We're sorry, but you've reached the end of search results."
       );
+      loadMoreBTN.remove();
+      return;
     }
-  });
+    // observer.observe(guard);
+    gallery.after(loadMoreBTN);
+    return;
+  } else if (!searchValue || '') {
+    gallery.innerHTML = '';
+    onSubmit();
+    return;
+  } else {
+    loadMoreBTN.remove();
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
+  } catch (error) {
+    console.log(error)
+  }
+  
 }
 
 // let options = {
